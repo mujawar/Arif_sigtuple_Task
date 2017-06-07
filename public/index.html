@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="http://davidstutz.github.io/bootstrap-multiselect/dist/css/bootstrap-multiselect.css">
+
+
+
+    <meta charset="UTF-8">
+    <title>user app</title>
+</head>
+<body>
+
+<div class="container" ng-controller="myCtrl">
+    <h1>User Registration app</h1>
+    <div>
+        <button class="btn-danger" ng-click="loginData()">Login</button>
+    </div>
+    <div style="text-align: center;color: red">
+        {{errormessage}}
+    </div>
+    <div class="form-group col-md-offset-3 col-lg-offset-3 col-md-6 col-lg-6 col-sm-12 col-xs-12" style="margin-top: 1%;">
+        <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search">Search</i></div>
+            <input type="text" class="form-control" placeholder="Search by Name and Email" ng-model="searchname">
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th style="width:10%">ID</th>
+            <th style="width:10%">Name</th>
+            <th style="width:10%">Address</th>
+            <th style="width:10%">Zip</th>
+            <th style="width:15%">Date Of Birth</th>
+            <th style="width:10%">Email</th>
+            <th style="width:10%">Contact</th>
+            <th style="width:15%">Department</th>
+            <th style="width:15%">GPA</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><input class="form-control" ng-model="driver.id" placeholder="ID"></td>
+            <td><input class="form-control" ng-model="driver.name" placeholder="Name"></td>
+            <td><input class="form-control" ng-model="driver.address" placeholder="address"></td>
+            <td><input class="form-control" ng-model="driver.zip" placeholder="Zip"></td>
+
+            <td>
+                <div class="input-group date" data-provide="datepicker" placeholder="select DOB">
+                    <input type="text" class="form-control" ng-model="driver.date">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </td>
+            <td><input class="form-control" ng-model="driver.email" placeholder="Email"></td>
+            <td><input class="form-control" ng-model="driver.contact" placeholder="Contact"></td>
+
+            <td>
+                <select class="multiselect" multiple="multiple" ng-model="hobs"  ng-change="addNewValues()">
+                    <option ng-repeat="hob in department track by $index" ng-value="hob.name" ng-checked="hobs.indexOf(hob.name) > -1"  >{{hob.name}}</option>
+                </select>
+            </td>
+            <td><input class="form-control" type="number" min="1" max="4" ng-model="driver.gpa" placeholder="GPA"></td>
+            <td>
+                <button class="btn-primary" ng-click="AddDetails()">Add</button>
+            </td>
+            <td>
+                <button class="btn-primary" ng-click="update()">update</button>
+            </td>
+            <td>
+                <button class="btn-primary" ng-click="clear()">clear</button>
+            </td>
+
+
+        </tr>
+        <tr ng-repeat="driver in driverlist | filter: searchname">
+            <td>{{driver.id}}</td>
+            <td>{{driver.name}}</td>
+            <td>{{driver.address}}</td>
+            <td>{{driver.zip}}</td>
+            <td>{{driver.date}}</td>
+            <td>{{driver.email}}</td>
+            <td>{{driver.contact}}</td>
+            <td ng-repeat="hob in driver.department ">
+                <span>{{hob}}</span>
+            </td>
+            <td>{{driver.gpa}}</td>
+
+            <td>
+                <button class="btn-danger" ng-click="remove(driver)">Remove</button>
+            </td>
+            <td>
+                <button class="btn-danger" ng-click="Edit(driver._id)">Edit</button>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+
+
+<!--<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" style="margin-top: 1%;">
+    <h1>User Registration app</h1>
+    <form ng-submit="AddDetails()" data-toggle="validator" role="form">
+        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">ID</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="First Name" name="id"
+                           ng-model="driver.id" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">NAME</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Last Name" name="name"
+                           ng-model="driver.name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Address</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Age" ng-model="driver.address" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Zip</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Age" ng-model="driver.zip" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Date Of Birth</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <div class="input-group date" data-provide="datepicker" placeholder="select DOB">
+                        <input type="text" class="form-control" ng-model="driver.date">
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Email</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Age" ng-model="driver.email" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Contact</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Phone" name="phone"  ng-model="driver.contact"
+                           required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">Department</label>
+                <div class="col-sm-8 col-lg-8 col-md-9 col-xs-12">
+                    <select class="multiselect" multiple="multiple" ng-model="hobs"  ng-change="addNewValues()">
+                        <option ng-repeat="hob in department track by $index" ng-value="hob.name" ng-checked="hobs.indexOf(hob.name) > -1"  >{{hob.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-4 col-lg-4 col-sm-12 col-xs-12 col-form-label">GPA</label>
+                <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" placeholder="Phone" name="phone" ng-model="driver.gpa"
+                           required>
+                </div>
+            </div>
+        </div>
+        <div style="margin-left: 49%;">
+            <button type="submit" class="btn-primary">Submit</button>
+        </div>
+        <div style="text-align: center;text-align: center;color: green;margin-top: 5px;margin-left: 5%;">{{message}}</div>
+    </form>
+</div>-->
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+<script src="http://davidstutz.github.io/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
+
+
+
+<script src="controllers/controller.js"></script>
+<script src="controllers/multiSelect.js"></script>
+<script>
+    $(function() {
+        $('.multiselect').multiselect();
+    });
+
+</script>
+
+</body>
+</html>
